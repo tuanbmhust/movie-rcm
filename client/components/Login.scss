@@ -1,0 +1,20 @@
+//@import 'foundation-sites/scss/foundation';
+@import 'App/settings';
+/// include all modules of foundation
+//@include foundation-everything;
+@import 'foundation-sites/scss/util/util';
+
+$body-background: #222B31;
+$body-color: #95BBD5;
+$topbar-background: #222;
+
+@media all and (min-width: 480px) {
+    .Login {
+      padding: 60px 0;
+    }
+  
+    .Login form {
+      margin: 0 auto;
+      max-width: 320px;
+    }
+  }

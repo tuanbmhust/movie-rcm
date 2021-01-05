@@ -93,6 +93,9 @@ h1, h2, h3, h4, h5, h6 {
       &--new-release {
         background-image: url('icon/new-release.svg');
       }
+      &--recommend-for-you {
+        background-image: url('icon/recommend.svg');
+      }
     }
   }
 }

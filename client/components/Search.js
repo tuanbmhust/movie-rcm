@@ -54,7 +54,8 @@ class Search extends Component {
 	    	
 
 	    	var th = this;
-		    axios.get( Remote('search/movie', { query : encodeURI(currentValue) }) )
+			//axios.get( Remote('search/movie', { query : encodeURI(currentValue) }) )
+			axios.get( Remote('search/movie', { query : currentValue }) )
 		      .then(function(result) {   
 		        
 		        th.setState({

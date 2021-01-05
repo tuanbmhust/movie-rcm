@@ -1,6 +1,6 @@
 export function Remote(url, args) {
-	var apiUrl = process.env.API_URL;
-	var apiKey = process.env.API_KEY;
+	var apiUrl = process.env.API_URL_TMDB;
+	var apiKey = process.env.API_KEY_TMDB;
 	var apiLanguage = process.env.LANGUAGE;
 
 	var queryData = { api_key : apiKey, language : apiLanguage }
