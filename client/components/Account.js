@@ -1,7 +1,29 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
+import { Button } from "reactstrap";
 
 import Login from "./Login";
+
+const logout = () => {
+  console.log('logout');
+}
+
+const LoginOrLogout = (props) => {
+  const account = props.account;
+  if (account != null) {
+    return (
+      <div>
+        <Button className='mx-2' onClick={logout}>Logout</Button>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <Button className='mx-2' tag={Link} to='/register'>Sign Up</Button>
+      <Button className='mx-2' tag={Link} to='/login'>Sign In</Button>
+    </div>
+  );
+}
 
 export default class Account extends Component {
   constructor(props) {
@@ -40,12 +62,7 @@ export default class Account extends Component {
             </ul>
           </div>
         )}
-        {!this.props.account && (
-          <div>
-            <button className="btn btn-large btn-secondary mx-2" onClick="">Sign Up</button>
-            <button className="btn btn-large btn-secondary mx-2" onClick="">Sign In</button>
-          </div>
-        )}
+        <LoginOrLogout account={this.props.account} />
       </div>
     );
   }

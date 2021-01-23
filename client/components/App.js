@@ -6,52 +6,14 @@ import Search from "./Search";
 import Account from "./Account";
 
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import Login from "./Login";
+import Register from "./Register";
+import { Popular } from "./MainContent/Popular";
+import { TopRated } from "./MainContent/TopRated";
+import { NewRelease } from "./MainContent/NewRelease";
+import { RecommendForYou } from "./MainContent/RecommendForYou";
 
 const Child = ({ match }) => <Movie id={match.params.id} />;
-
-const Popular = () => (
-  <div className="container">
-    <div className="app">
-      <div className="app__header">
-        <h1>Popular Movies</h1>
-      </div>
-    </div>
-    <Movies />
-  </div>
-);
-
-const TopRated = () => (
-  <div className="container">
-    <div className="app">
-      <div className="app__header">
-        <h1>Top Rated Movies</h1>
-      </div>
-    </div>
-    <Movies type="top_rated" />
-  </div>
-);
-
-const NewRelease = () => (
-  <div className="container">
-    <div className="app">
-      <div className="app__header">
-        <h1>New Release</h1>
-      </div>
-    </div>
-    <Movies type="now_playing" />
-  </div>
-);
-
-const RecommendForYou = () => (
-  <div className="container">
-    <div className="app">
-      <div className="app__header">
-        <h1>Recommend For You</h1>
-      </div>
-    </div>
-    <Movies type="now_playing" />
-  </div>
-)
 
 class App extends Component {
   tryParseJSON(jsonString) {
@@ -121,6 +83,8 @@ class App extends Component {
           <Route path="/new-release" component={NewRelease} />
           <Route path="/recommend-for-you" component={RecommendForYou} />
           <Route path="/movies/:id" component={Child} />
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/register" component={Register} />
         </div>
       </Router>
     );

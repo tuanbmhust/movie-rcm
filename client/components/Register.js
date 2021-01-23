@@ -5,7 +5,7 @@ import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 
 var axios = require('axios');
 
-export default class Login extends Component {
+export default class Register extends Component {
     constructor(props) {
         super(props);
 
@@ -51,7 +51,11 @@ export default class Login extends Component {
                         <Label htmlFor='password'>Password</Label>
                         <Input type='password' id='password' name='password'/>
                     </FormGroup>
-                    <Button className='mt-2' type='submit'>Login</Button>
+                    <FormGroup className='mt-2'>
+                        <Label htmlFor='repassword'>Re-enter Password</Label>
+                        <Input type='password' id='repassword' name='repassword'/>
+                    </FormGroup>
+                    <Button className='mt-2' type='submit'>Register</Button>
                 </Form>
             </div>
             </div>
