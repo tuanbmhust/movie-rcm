@@ -1,22 +1,17 @@
 import React, { Component, useState } from "react";
 import "./Login.scss";
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect,
-} from "react-router-dom";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import { postRegister } from "../redux/actions/ActionCreators";
+import { connect } from "react-redux";
+import { Redirect } from "react-router";
 
-var axios = require("axios");
-
-export default class Register extends Component {
+class Register extends Component {
   constructor(props) {
     super(props);
-    this.handleLogin = this.handleLogin.bind(this);
+    this.handleRegister = this.handleRegister.bind(this);
   }
 
-  handleLogin(event) {
+  handleRegister(event) {
     event.preventDefault();
     const username = this.username.value;
     const password = this.password.value;
@@ -26,21 +21,25 @@ export default class Register extends Component {
     } else if (password !== repassword) {
       alert("PASSWORDS DO NOT MATCH");
     } else {
-      const loginDetails = {
+      const registerDetails = {
         username: this.username.value,
         password: this.password.value,
-        repassword: this.repassword.value,
+        // repassword: this.repassword.value,
       };
-      alert(JSON.stringify(loginDetails));
-      //   this.props.postLogin(loginDetails);
+      // alert(JSON.stringify(registerDetails));
+      this.props.postRegister(registerDetails);
     }
   }
 
   render() {
+    if (this.props.loginAccount.account != null) {
+      return <Redirect to="/" />;
+    }
+    const errMess = this.props.loginAccount.errMess;
     return (
       <div className="container">
         <div className="col-12 col-sm-6 offset-sm-3 mt-5">
-          <Form onSubmit={this.handleLogin}>
+          <Form onSubmit={this.handleRegister}>
             <FormGroup className="mt-2">
               <Label htmlFor="username">Username</Label>
               <Input
@@ -68,6 +67,11 @@ export default class Register extends Component {
                 innerRef={(input) => (this.repassword = input)}
               />
             </FormGroup>
+            <FormGroup>
+              {errMess != null && (
+                <Label className="text-danger mt-2">{errMess}</Label>
+              )}
+            </FormGroup>
             <Button className="mt-2" type="submit">
               Register
             </Button>
@@ -77,3 +81,17 @@ export default class Register extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    loginAccount: state.loginAccount,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    postRegister: (registerDetails) => dispatch(postRegister(registerDetails)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register);

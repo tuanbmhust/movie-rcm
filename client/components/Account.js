@@ -1,11 +1,6 @@
 import React, { Component, useState } from "react";
 import { connect } from "react-redux";
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect,
-} from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Button,
   Dropdown,
@@ -15,6 +10,7 @@ import {
   Nav,
 } from "reactstrap";
 import { postLogout } from "../redux/actions/ActionCreators";
+import Cookies from "js-cookie";
 
 function LogoutButton(props) {
   const account = props.account;
@@ -25,7 +21,11 @@ function LogoutButton(props) {
 
   const logout = () => {
     console.log(`logout: ${JSON.stringify(account)}`);
-    // props.postLogout();
+    Cookies.remove("account");
+    setTimeout(() => {
+      window.location.reload(false);
+    }, 500);
+    // props.postLogout(account);
   };
 
   return (
@@ -41,7 +41,7 @@ function LogoutButton(props) {
             width="16"
             height="16"
             fill="currentColor"
-            class="bi bi-person-circle"
+            className="bi bi-person-circle"
             viewBox="0 0 16 16"
           >
             <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z" />
@@ -67,11 +67,8 @@ function LogoutButton(props) {
 
 const LoginOrLogout = (props) => {
   const account = props.account;
-
   if (account != null) {
-    return (
-      <LogoutButton account={props.account} postLogout={props.postLogout} />
-    );
+    return <LogoutButton account={account} postLogout={props.postLogout} />;
   }
   return (
     <div>
@@ -106,7 +103,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    postLogout: () => dispatch(postLogout()),
+    postLogout: (account) => dispatch(postLogout(account)),
   };
 };
 

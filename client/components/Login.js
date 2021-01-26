@@ -1,90 +1,84 @@
 import React, { Component, useState } from "react";
 import "./Login.scss";
-import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import { postLogin } from "../redux/actions/ActionCreators";
+import { connect } from "react-redux";
+import { Redirect } from "react-router";
 
-var axios = require('axios');
+class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.handleLogin = this.handleLogin.bind(this);
+  }
 
-export default class Login extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            username: '',
-            password: '',
-            submitted: false
-        }
-
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
+  handleLogin(event) {
+    event.preventDefault();
+    const username = this.username.value;
+    const password = this.password.value;
+    if (username === "" || password === "") {
+      alert("EMPTY USERNAME OR PASSWORD");
+    } else {
+      const loginDetails = {
+        username: this.username.value,
+        password: this.password.value,
+      };
+      this.props.postLogin(loginDetails);
+      //   alert(JSON.stringify(loginDetails));
     }
+  }
 
-    handleChange(e) {
-        const { name, value } = e.target
-        this.setState({ name: value })
+  render() {
+    if (this.props.loginAccount.account != null) {
+      return <Redirect to="/" />;
     }
+    const errMess = this.props.loginAccount.errMess;
+    return (
+      <div className="container">
+        <div className="col-12 col-sm-6 offset-sm-3 mt-5">
+          <Form onSubmit={this.handleLogin}>
+            <FormGroup className="mt-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                type="text"
+                id="username"
+                name="username"
+                innerRef={(input) => (this.username = input)}
+              />
+            </FormGroup>
+            <FormGroup className="mt-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                type="password"
+                id="password"
+                name="password"
+                innerRef={(input) => (this.password = input)}
+              />
+            </FormGroup>
+            <FormGroup>
+              {errMess != null && (
+                <Label className="text-danger mt-2">{errMess}</Label>
+              )}
+            </FormGroup>
+            <Button className="mt-2" type="submit">
+              Login
+            </Button>
+          </Form>
+        </div>
+      </div>
+    );
+  }
+}
 
-    handleSubmit(e) {
-        e.preventDefault()
-
-        this.setState({ submitted: true })
-        const { username, password } = this.state
-
-        if (username && password) {
-            //Do sth
-        }
-    }
-
-    render() {
-        const { loggingIn } = this.props;
-        const { username, password, submitted } = this.state;
-
-        return (
-            <div className='container'>
-            <div className='col-12 col-sm-6 offset-sm-3 mt-5'>
-                <Form>
-                    <FormGroup className='mt-2'>
-                        <Label htmlFor='username'>Username</Label>
-                        <Input type='text' id='username' name='username'/>
-                    </FormGroup>
-                    <FormGroup className='mt-2'>
-                        <Label htmlFor='password'>Password</Label>
-                        <Input type='password' id='password' name='password'/>
-                    </FormGroup>
-                    <Button className='mt-2' type='submit'>Login</Button>
-                </Form>
-            </div>
-            </div>
-        );
-/*
-        return (
-            <div className="col-md-6 col-md-offset-3">
-                <h2>Login</h2>
-                <form name="form" onSubmit={this.handleSubmit}>
-                    <div className={'form-group' + (submitted && !username ? ' has-error' : '')}>
-                        <label htmlFor="username">Username</label>
-                        <input type="text" className="form-control" name="username" value={username} onChange={this.handleChange} />
-                        {submitted && !username &&
-                            <div className="help-block">Username is required</div>
-                        }
-                    </div>
-                    <div className={'form-group' + (submitted && !password ? ' has-error' : '')}>
-                        <label htmlFor="password">Password</label>
-                        <input type="password" className="form-control" name="password" value={password} onChange={this.handleChange} />
-                        {submitted && !password &&
-                            <div className="help-block">Password is required</div>
-                        }
-                    </div>
-                    <div className="form-group">
-                        <button className="btn btn-primary">Login</button>
-                        {loggingIn &&
-                            <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-                        }
-                        <Link to="/register" className="btn btn-link">Register</Link>
-                    </div>
-                </form>
-            </div>
-        );
-        */
-    }
+const mapStateToProps = (state) => {
+  return {
+    loginAccount: state.loginAccount,
+  };
 };
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    postLogin: (loginDetails) => dispatch(postLogin(loginDetails)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
