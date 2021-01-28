@@ -1,79 +1,54 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useMemo, useState } from "react";
+import { connect } from "react-redux";
+import { Button, Label } from "reactstrap";
+import { getReact, postReact } from "../redux/actions/ActionCreators";
+import "./Rating.scss";
 
-import './Rating.scss';
+const Rating = (props) => {
+  const movieid = props.movieid;
+  const account = props.loginAccount.account;
+  // const [active, setActive] = useState();
 
-var axios = require('axios');
+  const vote = useMemo(() => {
+    props.getReact(account, movieid);
+    return props.movie.react;
+  }, [props.movie.react]);
 
-import { Remote } from './Remote';
+  const voteState = useMemo(() => props.voteState, [props.voteState]);
 
-class Rating extends Component {
+  const handleOnClick = (react) => {
+    const reactDetails = { movie_id: movieid, react: react };
+    props.postReact(account, reactDetails);
+    window.location.reload(false);
+  };
 
-	constructor(props) {
-	    super(props);
-	    this.state = {
-	      rating: this.props.value,
-	    };
+  return (
+    <div className="rating">
+      <Button className="m-2" onClick={() => handleOnClick(1)}>
+        {voteState > 0 ? "LIKED" : "Like"}
+      </Button>
+      <Button className="m-2" onClick={() => handleOnClick(-1)}>
+        {voteState < 0 ? "DISLIKED" : "Dislike"}
+      </Button>
+      <Label>React points: {vote}</Label>
+    </div>
+  );
+};
 
-	    //this.storeRating = this.storeRating.bind(this);
-	}
+const mapStateToProps = (state) => {
+  return {
+    loginAccount: state.loginAccount,
+    movie: state.movie,
+    voteState: state.movie.voteState,
+  };
+};
 
-	componentWillReceiveProps(nextProps) {
-		/*
-		if( this.props.rating !== nextProps.rating) 
-	    {
-           
-	    }*/
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getReact: (account, movieid) => dispatch(getReact(account, movieid)),
+    postReact: (account, reactDetails) =>
+      dispatch(postReact(account, reactDetails)),
+  };
+};
 
-	    this.setState({
-      		rating: nextProps.rating
-    	});
-	}
-
-	storeRating(rating) {
-		var th = this;
-		var id = this.props.movie
-		var sessionId = localStorage.getItem('session_id');
-		if(sessionId !== null) {
-			axios.post( Remote('movie/' + id + '/rating', { session_id : sessionId }),
-				{
-				    value: rating
-				})
-		      	.then(function(result) {  
-		        	th.setState({
-		          		rating: rating
-		        	});
-		    	})
-		}
-	}
-
-	render() {
-		let stars = [];
-		for (var i = 1; i < 11; i++) {
-			stars.push(i);
-		}
-		var th = this;
-		var sessionId = localStorage.getItem('session_id');
-	    return (
-	    	<div className="rating">
-	    		<div className="stars" data-stars={ this.state.rating }>
-					{stars.map(function(rating) {
-			          return (
-			            <svg key={ rating } height="32" width="32" className="star rating" data-rating={ rating } onClick={ () => th.storeRating(rating) }>
-					    	<polygon id="Shape" points="23.9605963 8.744 16.0252422 7.06926708 11.980323 0.0399006211 7.93535404 7.06926708 0 8.744 5.43542857 14.7631304 4.57609938 22.827528 11.980323 19.5181615 19.3844969 22.827528 18.525118 14.7631304"></polygon>
-						</svg>
-			          );
-			        })}
-	    		</div>
-	    		{ sessionId === null &&
-	    			<div className="rating__message">
-	    				You need to log in in order to rate
-	    			</div>
-	    		}
-	    		
-	    	</div>
-	    );
-	}
-
-}
-
-export default Rating;
+export default connect(mapStateToProps, mapDispatchToProps)(Rating);

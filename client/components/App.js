@@ -41,7 +41,7 @@ class App extends Component {
     var account = null;
     var account = this.tryParseJSON(localStorage.getItem("account"));
 
-    console.log(account);
+    // console.log(account);
 
     return (
       <Provider store={store}>

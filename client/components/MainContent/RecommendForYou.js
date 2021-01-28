@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { connect } from "react-redux";
+import { getRecommendIdList } from "../../redux/actions/ActionCreators";
 import Movies from "../Movies";
 
 const Message = (props) => {
@@ -7,7 +8,7 @@ const Message = (props) => {
 };
 
 const Content = (props) => {
-  console.log(props.account);
+  console.log("prpr" + props.ids);
   if (props.account) {
     if (props.account.moviesLiked < 5) {
       const message = "You must like at least 5 movies to see this content";
@@ -20,7 +21,7 @@ const Content = (props) => {
               <h1>Recommend For You</h1>
             </div>
           </div>
-          <Movies type="now_playing" />
+          {props.ids.length > 0 && <Movies ids={props.ids} />}
         </React.Fragment>
       );
     }
@@ -35,9 +36,14 @@ const Content = (props) => {
 };
 
 const RecommendForYou = (props) => {
+  const ids = useMemo(() => {
+    props.getRecommendIdList(props.account);
+    return props.recommend;
+  }, [props.recommend.length]);
+  // console.log(ids);
   return (
     <div className="container">
-      <Content account={props.account} />
+      <Content account={props.account} ids={ids} />
     </div>
   );
 };
@@ -46,12 +52,13 @@ const mapStateToProps = (state) => {
   return {
     // loginAccount: state.loginAccount,
     account: state.loginAccount.account,
+    recommend: state.movies.recommend,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    //   postLogout: () => dispatch(postLogout()),
+    getRecommendIdList: (account) => dispatch(getRecommendIdList(account)),
   };
 };
 

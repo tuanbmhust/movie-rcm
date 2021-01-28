@@ -90,7 +90,7 @@ export const registerFailed = (errMess) => {
 
 export const postRegister = (registerDetails) => (dispatch) => {
   const data = JSON.stringify(registerDetails);
-  alert(data);
+  // alert(data);
 
   return fetch(baseUrl + "api/register/", {
     method: "POST",
@@ -185,5 +185,185 @@ export const postLogout = (account) => (dispatch) => {
     })
     .catch((error) => {
       console.log("Logout ", error.message);
+    });
+};
+
+/*////////////////////
+REACT/VOTE ACTIONS
+////////////////////*/
+
+export const reactLike = () => {
+  return {
+    type: ActionTypes.REACT_LIKE,
+    // payload: account,
+  };
+};
+
+export const reactDislike = () => {
+  return {
+    type: ActionTypes.REACT_DISLIKE,
+    // payload: errMess,
+  };
+};
+
+export const postReact = (account, reactDetails) => (dispatch) => {
+  const data = JSON.stringify(reactDetails);
+  // alert(data);
+
+  return fetch(baseUrl + "api/react/", {
+    method: "POST",
+    body: data,
+    // mode: "cors",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${account.token}`,
+    },
+  })
+    .then(
+      (response) => {
+        if (response.ok || response.status === 400) {
+          return response;
+        } else {
+          var error = new Error(
+            "Error " + response.status + ": " + response.statusText
+          );
+          error.response = response;
+          throw error;
+        }
+      },
+      (error) => {
+        var errMess = new Error(error.message);
+        throw errMess;
+      }
+    )
+    .then((response) => {
+      return response.json();
+    })
+    .then((response) => {
+      if (response.data == null) {
+        console.log("React error ", error.message);
+      } else {
+        const react = response.data.react;
+        if (react > 0) dispatch(reactLike());
+        else if (react < 0) dispatch(reactDislike());
+        else {
+          console.log("React error ", error.message);
+        }
+      }
+    })
+    .catch((error) => {
+      console.log("React error ", error.message);
+    });
+};
+
+export const getReactSuccessfully = (movieid, react, voteState) => {
+  return {
+    type: ActionTypes.GET_REACT_SUCCESSFULLY,
+    payload: {
+      movieid: movieid,
+      react: react,
+      voteState: voteState,
+    },
+  };
+};
+
+export const getReact = (account, movieid) => (dispatch) => {
+  const data = qs.stringify({ movie_id: movieid });
+  // alert(data);
+
+  return fetch(baseUrl + `api/react/?${data}`, {
+    method: "GET",
+    // body: data,
+    // mode: "cors",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${account.token}`,
+    },
+  })
+    .then(
+      (response) => {
+        if (response.ok || response.status === 400) {
+          return response;
+        } else {
+          var error = new Error(
+            "Error " + response.status + ": " + response.statusText
+          );
+          error.response = response;
+          throw error;
+        }
+      },
+      (error) => {
+        var errMess = new Error(error.message);
+        throw errMess;
+      }
+    )
+    .then((response) => {
+      return response.json();
+    })
+    .then((response) => {
+      if (response.data == null) {
+        console.log("React error ", error.message);
+      } else {
+        const react = response.data;
+        const voteState = response.state;
+        console.log(JSON.stringify(response));
+        dispatch(getReactSuccessfully(movieid, react, voteState));
+      }
+    })
+    .catch((error) => {
+      console.log("React error ", error.message);
+    });
+};
+
+export const getRecommendIdListSuccessfully = (recommend) => {
+  return {
+    type: ActionTypes.GET_RECOMMEND_LIST_SUCCESSFULLY,
+    payload: recommend,
+  };
+};
+
+export const getRecommendIdList = (account) => (dispatch) => {
+  // const data = qs.stringify({ movie_id: movieid });
+  // alert(data);
+
+  return fetch(baseUrl + `api/recommend/`, {
+    method: "GET",
+    // body: data,
+    // mode: "cors",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${account.token}`,
+    },
+  })
+    .then(
+      (response) => {
+        if (response.ok || response.status === 400) {
+          return response;
+        } else {
+          var error = new Error(
+            "Error " + response.status + ": " + response.statusText
+          );
+          error.response = response;
+          throw error;
+        }
+      },
+      (error) => {
+        var errMess = new Error(error.message);
+        throw errMess;
+      }
+    )
+    .then((response) => {
+      return response.json();
+    })
+    .then((response) => {
+      if (response.recommended_movies == null) {
+        console.log("React error ", error.message);
+      } else {
+        const recommend = response.recommended_movies;        
+        dispatch(getRecommendIdListSuccessfully(recommend));
+      }
+    })
+    .catch((error) => {
+      console.log("React error ", error.message);
     });
 };
